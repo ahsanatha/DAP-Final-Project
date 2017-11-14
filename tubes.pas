@@ -32,18 +32,10 @@ type
 			weekday : string;
 			weekend : string;
 		end;
-	loc = 
-		record
-			alamat : string;
-			Kota : string;
-			provinsi : string;
-			negara : string;
-			
-		end;
 	waktu =
 		record
-			Buka : Integer;
-			tutup : Integer;
+			Buka : string;
+			tutup : string;
 		end;
 
 	wisata = 	
@@ -52,7 +44,7 @@ type
 			inout : string;
 			indFam : string;
 			harga : hari;
-			lokasi : loc;
+			lokasi : string;
 			deskripsi : string;
 			jam : waktu ;
 			fasilitas : array[1..100] of string;
@@ -63,17 +55,29 @@ var
 	arWisata: array [1..1000] of wisata;
 	jumlahdata:longint;
 	pilih : Byte;
-//==================== PROCEDURE DAN FUNCTION ====================\\
-procedure menuUser();
+
+//==================== PROCEDURE DAN FUNCTION yang dibutuhkan ====================\\
+
+function getWord2() : string;
+var
+  c : char;
 begin
-	writeln('1. Lihat Semua Wisata');
-	
-end;
-//==================== Admin Menu dan teman teman ====================\\
+  getWord2 := '';
+  read(c);
+  while(c <> '.') do 
+  begin
+    getWord2 := getWord2 + c;
+    if(eoln) then 
+    begin
+      readln();
+      break;
+    end;
+    read(c);
+  end;
+end;	
 function getWord1() : string;
 var
   c : char;
-
 begin
   getWord1 := '';
   read(c);
@@ -126,53 +130,122 @@ begin
 		end;
 	close(f);
 end;
-procedure insertData();
+//==================== User Menu dan teman teman nya ====================\\
+procedure menuUser();
+begin
+	writeln('1. Lihat Semua Wisata');
+	writeln('2. Cari Tempat wisata')
+	
+end;
+//==================== Admin Menu dan teman teman nya ====================\\
+procedure cek(idx:integer);
+begin
+	writeln('data yang ini?');
+	writeln;
+		writeln('indeks #',idx);
+				writeln('Nama Tempat Wisata : ', arWisata[idx].nama);
+				writeln('Indoor / Outdoor : ', arWisata[idx].inout);
+				writeln('individu / Family Friendly : ', arWisata[idx].indFam);
+				writeln('Harga Weekday [Senin-Jumat] (per orang) : ', arWisata[idx].harga.weekday);
+				writeln('Harga Weekend [Sabtu-Minggu] (per orang) : ', arWisata[idx].harga.weekend);
+				writeln('Jam Operasional : ', arWisata[idx].jam.buka,'-', arWisata[idx].jam.tutup);
+				write('fasilitas : '); j:=1;
+					while arWisata[idx].fasilitas[j] <> '' do
+						begin
+							write(arWisata[idx].fasilitas[j],', ');
+							inc(j);
+						end;
+				writeln;
+				writeln('Deskripsi : ', arWisata[idx].deskripsi);
+				writeln;
+end;
+
+procedure insertData(x:integer);
 	var
 		tmp,desk: string;
 		pilihadmin:char;
 begin
 	repeat
 		clrscr;
-		inc(jumlahdata);
-		write('Nama Tempat Wisata : '); readln(arWisata[jumlahdata].nama);
-		write('Indoor / Outdoor : '); readln(arWisata[jumlahdata].inout);
-		write('individu / Family Friendly : '); readln(arWisata[jumlahdata].indFam);
-		write('Harga Weekday [Senin-Jumat] (per orang) : '); readln(arWisata[jumlahdata].harga.weekday);
-		write('Harga Weekend [Sabtu-Minggu] (per orang) : '); readln(arWisata[jumlahdata].harga.weekend);
-		write('Jam Buka Operasional : '); readln(arWisata[jumlahdata].jam.buka);
-		write('Jam Tutup Operasional : '); readln(arWisata[jumlahdata].jam.tutup);
-		write('fasilitas [pisahkan dengan koma, akhiri dengan #] : '); j:=1; tmp:=getWord;
+		write('Nama Tempat Wisata : '); readln(arWisata[x].nama);
+		write('Alamat tempat wisata : '); readln(arWisata[x].lokasi);
+		write('Indoor / Outdoor : '); readln(arWisata[x].inout);
+		write('individu / Family Friendly : '); readln(arWisata[x].indFam);
+		write('Harga Weekday [Senin-Jumat] (per orang) : '); readln(arWisata[x].harga.weekday);
+		write('Harga Weekend [Sabtu-Minggu] (per orang) : '); readln(arWisata[x].harga.weekend);
+		write('Jam Buka Operasional [jam.menit] : '); readln(arWisata[x].jam.buka);
+		write('Jam Tutup Operasional [jam.menit] : '); readln(arWisata[x].jam.tutup);
+		write('fasilitas [pisahkan dengan koma, akhiri dengan ",#"] : '); j:=1; tmp:=getWord;
 		while tmp <> '#' do //masukin kata perkata sampai user menginput #
 			begin
-				arWisata[jumlahdata].fasilitas[j]:=tmp;
+				arWisata[x].fasilitas[j]:=tmp;
 				tmp:=getWord;
 				inc(j);
 			end;
-		write(' Deskripsi : '); desk:=''; tmp:=getWord1;
+		write(' Deskripsi [akhiri dengan " #"] : '); desk:=''; tmp:=getWord1;
 		while tmp <> '#' do //masukin kata perkata sampai user menginput #
 			begin
 				desk:=desk+' '+tmp;
 				tmp:=getWord1;
 			end;
-		arWisata[i].deskripsi:=desk;
+		arWisata[x].deskripsi:=desk;
 		writeln;
-		write('Ingin nambah data wisata lagi? [Y/T]'); readln(pilihadmin);
+		write('Ingin nambah data wisata lagi? [Y/T] : '); readln(pilihadmin);
 	until (lowercase(pilihadmin)='t');
 end;
+
+procedure editData();
+	var
+		idx: Integer;
+		pilih:char;
+begin
+	writeln;
+		write('masukkan nomor indeks yang ingin di edit : '); readln(idx);
+	clrscr;
+	cek(idx);
+	write('pilih : [y/n] : '); readln(pilih);
+	if lowercase(pilih) = 'y' then
+		begin
+			insertData(idx);
+		end;
+end;
+
+procedure deleteData();
+var 
+	pilih: char;
+	idx:byte;
+//mencari datanya
+begin
+	write('masukkan nomor indeks tempat wisata : '); readln(idx);
+	clrscr;
+	cek(idx);
+	write('pilih : [y/n] : '); readln(pilih);
+	if pilih = 'y'then
+	begin 
+		//hapus datanya 
+		for i:= idx to jumlahdata do
+			begin
+				arWisata[i]:=arWisata[i+1]
+			end;
+		dec(jumlahdata);
+	end;
+end;
+
 
 procedure viewData();
 	var
 		tmp,flag: Integer;
 begin
 	clrscr;
-	flag:=1;
-	for i:= 1 to jumlahdata do 
+	flag:=1; i:=1;
+	while i<=jumlahdata do
 		begin
 			if flag <= 2 then
 				begin
 					inc(flag);
-					writeln('#',i);
+					writeln('indeks #',i);
 					writeln('Nama Tempat Wisata : ', arWisata[i].nama);
+					writeln('Alamat tempat wisata : ',arWisata[i].lokasi);
 					writeln('Indoor / Outdoor : ', arWisata[i].inout);
 					writeln('individu / Family Friendly : ', arWisata[i].indFam);
 					writeln('Harga Weekday [Senin-Jumat] (per orang) : ', arWisata[i].harga.weekday);
@@ -181,13 +254,14 @@ begin
 					write('fasilitas : '); j:=1;
 						while arWisata[i].fasilitas[j] <> '' do
 						begin
-							write(arWisata[i].fasilitas[j],' ');
+							write(arWisata[i].fasilitas[j],', ');
 							inc(j);
 						end;
 					writeln;
 					write('Deskripsi : ', arWisata[i].deskripsi);
 					writeln;
 					writeln;
+					inc(i);
 				end
 			else
 				begin
@@ -199,9 +273,9 @@ begin
 		writeln;
 	write('[1.Insert 2.Edit 3.Delete 4.Back] : '); readln(tmp);
 		case tmp of
-			1 : begin insertData(); end;
-			2 : begin {editData;} end;
-			3 : begin {deleteData;} end;
+			1 : begin inc(jumlahdata); insertData(jumlahdata); end;
+			2 : begin editData; end;
+			3 : begin deleteData; end;
 		end;
 end;
 
@@ -212,18 +286,20 @@ begin
 	repeat
 	clrscr;
 	writeln('Login >> Admin Menu');
+	writeln;
 	writeln('== Admin Menu ==');
 	writeln('1. Insert Data');
 	writeln('2. Edit Data');
 	writeln('3. Delete Data');
 	writeln('4. View Data');
 	writeln('5. Back');
+	writeln('jumlah data : ',jumlahdata);
 	writeln;
 	write(' Pilih : '); readln(pilih);
 	case pilih of
-		1 : begin insertData(); end;
-		2 : begin {editData();} end;
-		3 : begin {deleteData();} end;
+		1 : begin inc(jumlahdata); insertData(jumlahdata); end;
+		2 : begin editData(); end;
+		3 : begin deleteData(); end;
 		4 : begin viewData(); end;
 	end;
 	until (pilih=5);
@@ -250,4 +326,3 @@ begin
 	until (id=3);
 	clrscr;
 end.
-
