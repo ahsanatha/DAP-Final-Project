@@ -308,6 +308,10 @@ end;
 
 //==================== PROGRAM UTAMA ====================\\
 begin
+	Assign(f, 'wisata.dat') ;
+    {$I-} Reset(f) ;
+    {$I+} if IOResult<>0 then Rewrite(f) ;
+    close(f);
 	repeat
 	clrscr;
 	writeln('-------------------------------------------------');
