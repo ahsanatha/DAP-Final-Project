@@ -1,7 +1,7 @@
 //Tempat wisata di Emerald city dikelola datanya menggunakan sebuah program.
-//Program tersebut mengelola data usaha wisata berdasarkan tipe wisata (outdoor, indoor), 
-//(individu, family friendly), harga tiket masuk sesuai dengan hari atau waktunya, dan menyediakan 
-//fasilitas umum seperti toilet, musholah, dan juga jenis makanan / sourvenir yang dijual ditempat 
+//Program tersebut mengelola data usaha wisata berdasarkan tipe wisata (outdoor, indoor),
+//(individu, family friendly), harga tiket masuk sesuai dengan hari atau waktunya, dan menyediakan
+//fasilitas umum seperti toilet, musholah, dan juga jenis makanan / sourvenir yang dijual ditempat
 //pariwisata tersebut. Dan juga ada tidaknya fasilitas untuk para penyandang disabilitas.
 
 //7.	Spesifikasi struktur data yang wajib digunakan:
@@ -10,15 +10,15 @@
 //	c.	Terdapat proses penyimpanan data kedalam file DAT (*.dat) atau TEXT (*.txt)
 //
 //8.	Fungsionalitas minimum (POIN PENILAIAN)
-//	a.	Terdapat menu untuk yang mengelola data aplikasi. Ada insert, delete, edit/update and View dari 
-//		data yang ada di dalam aplikasi. 
-//	b.	Data menyesuaikan topiknya yang telah ditentukan. Data disimpan kedalam file ekstensi *.DAT, 
+//	a.	Terdapat menu untuk yang mengelola data aplikasi. Ada insert, delete, edit/update and View dari
+//		data yang ada di dalam aplikasi.
+//	b.	Data menyesuaikan topiknya yang telah ditentukan. Data disimpan kedalam file ekstensi *.DAT,
 //		kemudian file tersebut di load lagi ketika akan digunakan.
 //	(Hint: https://www.tutorialspoint.com/pascal/pascal_files_handling.htm ).
-//	c.	Terdapat menu searching data yang akan ditampilkan terhadap suatu kategori (terdapat pilihan 
-//		kategori, minimal 2 kategori, pencarian maximum dan minimum di anggap 1 kategori). Misalnya dosen 
+//	c.	Terdapat menu searching data yang akan ditampilkan terhadap suatu kategori (terdapat pilihan
+//		kategori, minimal 2 kategori, pencarian maximum dan minimum di anggap 1 kategori). Misalnya dosen
 //		mencari mahasiswa yang memiliki kategori jumlah kehadirannya paling sedikit.
-//	d.	Terdapat menu lihat data yang sudah terurut berdasarkan suatu kategori (terdapat pilihan kategori, 
+//	d.	Terdapat menu lihat data yang sudah terurut berdasarkan suatu kategori (terdapat pilihan kategori,
 //		minimal 3 kategori, masing-masing menggunakan bubble sort, selection dan insertion sort).
 //		Misalnya data pasien yang ingin ditampilkan oleh admin terurut berdasarkan kategori tanggal.
 //	e.	Penggunaan Error Handing karena kesalahan input adalah OPSIONAL.
@@ -26,9 +26,9 @@
 program JaJalKuy;
 //==================== DICTIONARY ====================\\
 uses crt,sysutils;
-type 
-	hari = 
-		record 
+type
+	hari =
+		record
 			weekday : string;
 			weekend : string;
 		end;
@@ -38,7 +38,7 @@ type
 			tutup : string;
 		end;
 
-	wisata = 	
+	wisata =
 		record
 			Nama : String;
 			inout : string;
@@ -64,27 +64,27 @@ var
 begin
   getWord2 := '';
   read(c);
-  while(c <> '.') do 
+  while(c <> '.') do
   begin
     getWord2 := getWord2 + c;
-    if(eoln) then 
+    if(eoln) then
     begin
       readln();
       break;
     end;
     read(c);
   end;
-end;	
+end;
 function getWord1() : string;
 var
   c : char;
 begin
   getWord1 := '';
   read(c);
-  while(c <> ' ') do 
+  while(c <> ' ') do
   begin
     getWord1 := getWord1 + c;
-    if(eoln) then 
+    if(eoln) then
     begin
       readln();
       break;
@@ -98,10 +98,10 @@ var
 begin
   getWord := '';
   read(c);
-  while(c <> ',') do 
+  while(c <> ',') do
   begin
     getWord := getWord + c;
-    if(eoln) then 
+    if(eoln) then
     begin
       readln();
       break;
@@ -115,7 +115,7 @@ begin
 	reset(f);
 	while not eof(f) do
 		begin
-			inc(jumlahdata);
+			inc(jumlahdata); //jumlahdata:=jumlahdata+1;
 			read(f,arWisata[jumlahdata]);
 		end;
 	close(f);
@@ -124,7 +124,7 @@ procedure save;
 begin
 	assign(f,'wisata.dat');
 	rewrite(f);
-	for i:= 1 to jumlahdata do 
+	for i:= 1 to jumlahdata do
 		begin
 			write(f,arWisata[i]);
 		end;
@@ -135,7 +135,7 @@ procedure menuUser();
 begin
 	writeln('1. Lihat Semua Wisata');
 	writeln('2. Cari Tempat wisata')
-	
+
 end;
 //==================== Admin Menu dan teman teman nya ====================\\
 procedure cek(idx:integer);
@@ -191,6 +191,8 @@ begin
 		arWisata[x].deskripsi:=desk;
 		writeln;
 		write('Ingin nambah data wisata lagi? [Y/T] : '); readln(pilihadmin);
+		if pilihadmin = 'y' then
+			inc(jumlahdata);
 	until (lowercase(pilihadmin)='t');
 end;
 
@@ -203,7 +205,7 @@ begin
 		write('masukkan nomor indeks yang ingin di edit : '); readln(idx);
 	clrscr;
 	cek(idx);
-	write('pilih : [y/n] : '); readln(pilih);
+	write('pilih [y/t] : '); readln(pilih);
 	if lowercase(pilih) = 'y' then
 		begin
 			insertData(idx);
@@ -211,7 +213,7 @@ begin
 end;
 
 procedure deleteData();
-var 
+var
 	pilih: char;
 	idx:byte;
 //mencari datanya
@@ -219,10 +221,10 @@ begin
 	write('masukkan nomor indeks tempat wisata : '); readln(idx);
 	clrscr;
 	cek(idx);
-	write('pilih : [y/n] : '); readln(pilih);
+	write('pilih : [y/t] : '); readln(pilih);
 	if pilih = 'y'then
-	begin 
-		//hapus datanya 
+	begin
+		//hapus datanya
 		for i:= idx to jumlahdata do
 			begin
 				arWisata[i]:=arWisata[i+1]
@@ -308,17 +310,17 @@ end;
 
 //==================== PROGRAM UTAMA ====================\\
 begin
-	Assign(f, 'wisata.dat') ;
-    {$I-} Reset(f) ;
-    {$I+} if IOResult<>0 then Rewrite(f) ;
-    close(f);
+	//Assign(f, 'wisata.dat') ;
+    {$I-} //Reset(f) ;
+    {$I+} //if IOResult<>0 then Rewrite(f) ;
+    //close(f);
 	repeat
 	clrscr;
 	writeln('-------------------------------------------------');
 	writeln('========== Selamat Datang di JaJalKuy! ==========');
 	writeln('-------------------------------------------------');
 	writeln(' Main Menu ');
-	writeln('1.User(not yet)'); 
+	writeln('1.User(not yet)');
 	writeln('2.Admin ');
 	writeln('3.Log Out');
 	writeln;
