@@ -26,7 +26,15 @@
 program JaJalKuy;
 //==================== DICTIONARY ====================\\
 uses crt,sysutils;
+const
+	Max = 10000;
 type
+	akun =
+		record
+			nama: string;
+			uname: string;
+			pass: string;
+		end;
 	hari =
 		record
 			weekday : string;
@@ -52,11 +60,21 @@ type
 var
 	id,i,j: Integer;
 	f: file of wisata;
-	arWisata: array [1..1000] of wisata;
-	jumlahdata:longint;
+	fAkun : file of akun;
+	arWisata: array [1..Max] of wisata;
+	arAkun: array [1..Max] of akun;
+	jumlahdata,jumlahakun:longint;
 	pilih : Byte;
 
 //==================== PROCEDURE DAN FUNCTION yang dibutuhkan ====================\\
+
+function getpass(): string;
+var
+	x: integer;
+begin
+	x:readkey;
+
+end;
 
 function getWord2() : string;
 var
@@ -109,6 +127,27 @@ begin
     read(c);
   end;
 end;
+procedure loadAkun;
+begin
+	assign(fAkun,'akun.dat');
+	reset(fAkun);
+	while not eof(fAkun) do
+		begin
+			inc(jumlahakun); //jumlahdata:=jumlahdata+1;
+			read(fAkun,arAkun[jumlahakun]);
+		end;
+	close(fAkun);
+end;
+procedure saveAkun;
+begin
+	assign(fAkun,'Akun.dat');
+	rewrite(fAkun);
+	for i:= 1 to jumlahakun do
+		begin
+			write(fAkun,arAkun[i]);
+		end;
+	close(fAkun);
+end;
 procedure load;
 begin
 	assign(f,'wisata.dat');
@@ -131,11 +170,68 @@ begin
 	close(f);
 end;
 //==================== User Menu dan teman teman nya ====================\\
+procedure cekUser(uname,pass:string; var valid : boolean);
+var
+	i:longint;
+	cek:boolean;
+begin
+	cek:=false;
+	for i:=1 to jumlahakun do
+		begin
+		 	if (arAkun[i].uname = uname) and (arAkun[i].pass = pass) then
+		 		cek:=true;
+		 end; 
+	valid := cek;
+end;
 procedure menuUser();
 begin
+	clrscr;
 	writeln('1. Lihat Semua Wisata');
-	writeln('2. Cari Tempat wisata')
+	writeln('2. Cari Tempat wisata');
+	writeln('3.	Urutkan Berdasarkan');
+	writeln('4. History Booking Wisata');
+	readln;
+end;
 
+procedure welcomeUser();
+var
+	uname,pass: string;
+	pilihan:integer;
+	valid:boolean;
+begin
+	loadAkun;
+	repeat
+	clrscr;
+	writeln('1. Login ');
+	writeln('2. Register ');
+	writeln;
+	write('pilih : ');readln(pilihan);
+	until (pilihan = 1 ) or (pilihan = 2);
+	if pilihan = 1 then
+		begin
+			clrscr;
+			writeln('==Login==');
+			write('Username : '); readln(uname);
+			write('Password : ');readln(pass);
+			cekUser(uname,pass,valid);
+			if valid then
+				menuUser()
+			else
+				writeln('username atau password yang anda masukkan salah ');
+				write('press any key to continue..'); readkey;
+		end
+	else
+		begin
+			clrscr;
+			inc(jumlahakun);
+			writeln('==Daftar==');
+			write('Nama Lengkap : '); readln(arAkun[jumlahakun].nama);
+			write('Username : '); readln(arAkun[jumlahakun].uname);
+			write('Password : '); readln(arAkun[jumlahakun].pass);
+			saveAkun;
+			writeln('done');
+			write('press anykey to continue.. '); readkey;
+		end;
 end;
 //==================== Admin Menu dan teman teman nya ====================\\
 procedure cek(idx:integer);
@@ -181,7 +277,7 @@ begin
 				arWisata[x].fasilitas[j]:=tmp;
 				tmp:=getWord;
 				inc(j);
-			end;
+			enad;
 		write(' Deskripsi [akhiri dengan " #"] : '); desk:=''; tmp:=getWord1;
 		while tmp <> '#' do //masukin kata perkata sampai user menginput #
 			begin
@@ -308,26 +404,44 @@ begin
 	save;
 end;
 
-//==================== PROGRAM UTAMA ====================\\
+procedure welcomeAdmin();
+var
+	uname,pass: string;
 begin
-	//Assign(f, 'wisata.dat') ;
-    {$I-} //Reset(f) ;
-    {$I+} //if IOResult<>0 then Rewrite(f) ;
-    //close(f);
 	repeat
 	clrscr;
+	writeln('==Login Admin==');
+	write(' Username : '); readln(uname);
+	write(' Password  : '); readln(pass);
+	until ((uname = 'admin') and (pass = 'admin')) or ((uname = '') and (pass = ''));
+	if ((uname = 'admin') and (pass = 'admin')) then
+		menuAdmin();
+end;
+//==================== PROGRAM UTAMA ====================\\
+begin
+	clrscr;
+	Assign(f, 'wisata.dat') ;
+    {$I-} Reset(f) ;
+    {$I+} if IOResult<>0 then Rewrite(f) ;
+    close(f);
+    Assign(fAkun, 'akun.dat') ;
+    {$I-} Reset(fAkun) ;
+    {$I+} if IOResult<>0 then Rewrite(fAkun) ;
+    close(fAkun);
+	repeat
+	clrscr;//hahahahahahhahahahahaha
 	writeln('-------------------------------------------------');
 	writeln('========== Selamat Datang di JaJalKuy! ==========');
 	writeln('-------------------------------------------------');
 	writeln(' Main Menu ');
-	writeln('1.User(not yet)');
+	writeln('1.User)');
 	writeln('2.Admin ');
 	writeln('3.Log Out');
 	writeln;
 	write('Pilih : '); readln(id);
 	case id of
-		1: menuUser();
-		2: menuAdmin();
+		1: welcomeUser();
+		2: welcomeAdmin();
 	end;
 	until (id=3);
 	clrscr;
