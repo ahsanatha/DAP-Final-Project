@@ -381,6 +381,7 @@ end;
 //==================== PROGRAM UTAMA ====================\\
 begin
 	clrscr;
+	//buat bikin file kalau filenya ga ada
 	Assign(f, 'wisata.dat') ;
     {$I-} Reset(f) ;
     {$I+} if IOResult<>0 then Rewrite(f) ;
@@ -389,7 +390,7 @@ begin
     {$I-} Reset(fAkun) ;
     {$I+} if IOResult<>0 then Rewrite(fAkun) ;
     close(fAkun);
-
+    //akhir dari bikin file
 	repeat
 	clrscr;
 	writeln('-------------------------------------------------');
