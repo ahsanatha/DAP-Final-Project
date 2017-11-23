@@ -70,70 +70,26 @@ var
 
 function getpass(): string;
 var
-	x: integer;
+	x: char; tmp:string;
 begin
-	x:readkey;
-
+	tmp:='';
+	x:=readkey;
+	while x <> #13 do
+	begin
+		write('*');
+		tmp:=tmp+x;
+		x:=readkey;
+	end;
+	getpass:=tmp;
 end;
 
-function getWord2() : string;
-var
-  c : char;
-begin
-  getWord2 := '';
-  read(c);
-  while(c <> '.') do
-  begin
-    getWord2 := getWord2 + c;
-    if(eoln) then
-    begin
-      readln();
-      break;
-    end;
-    read(c);
-  end;
-end;
-function getWord1() : string;
-var
-  c : char;
-begin
-  getWord1 := '';
-  read(c);
-  while(c <> ' ') do
-  begin
-    getWord1 := getWord1 + c;
-    if(eoln) then
-    begin
-      readln();
-      break;
-    end;
-    read(c);
-  end;
-end;
-function getWord() : string;
-var
-  c : char;
-begin
-  getWord := '';
-  read(c);
-  while(c <> ',') do
-  begin
-    getWord := getWord + c;
-    if(eoln) then
-    begin
-      readln();
-      break;
-    end;
-    read(c);
-  end;
-end;
 procedure loadAkun;
 begin
 	assign(fAkun,'akun.dat');
 	reset(fAkun);
 	while not eof(fAkun) do
 		begin
-			inc(jumlahakun); //jumlahdata:=jumlahdata+1;
+			inc(jumlahakun);
 			read(fAkun,arAkun[jumlahakun]);
 		end;
 	close(fAkun);
@@ -212,7 +168,7 @@ begin
 			clrscr;
 			writeln('==Login==');
 			write('Username : '); readln(uname);
-			write('Password : ');readln(pass);
+			write('Password : '); pass:=getpass;
 			cekUser(uname,pass,valid);
 			if valid then
 				menuUser()
@@ -258,33 +214,38 @@ end;
 
 procedure insertData(x:integer);
 	var
-		tmp,desk: string;
-		pilihadmin:char;
+		pilihadmin:char; tmp:integer;
 begin
 	repeat
 		clrscr;
 		write('Nama Tempat Wisata : '); readln(arWisata[x].nama);
 		write('Alamat tempat wisata : '); readln(arWisata[x].lokasi);
-		write('Indoor / Outdoor : '); readln(arWisata[x].inout);
-		write('individu / Family Friendly : '); readln(arWisata[x].indFam);
+
+		repeat
+			write('1. Indoor / 2. Outdoor // Pilih angka  : '); readln(tmp);
+		until (tmp = 1 ) or (tmp=2);
+		if tmp = 1 then
+			arWisata[x].inout:='Indoor'
+		else
+			arWisata[x].inout:='Outdoor';
+
+		repeat
+		write('1. Individu / 2. Family Friendly : '); readln(tmp);
+		until (tmp = 1 ) or (tmp=2);
+		if tmp = 1 then
+			arWisata[x].indFam:='Individu'
+		else
+			arWisata[x].indFam:='Family Friendly';
 		write('Harga Weekday [Senin-Jumat] (per orang) : '); readln(arWisata[x].harga.weekday);
 		write('Harga Weekend [Sabtu-Minggu] (per orang) : '); readln(arWisata[x].harga.weekend);
 		write('Jam Buka Operasional [jam.menit] : '); readln(arWisata[x].jam.buka);
 		write('Jam Tutup Operasional [jam.menit] : '); readln(arWisata[x].jam.tutup);
-		write('fasilitas [pisahkan dengan koma, akhiri dengan ",#"] : '); j:=1; tmp:=getWord;
-		while tmp <> '#' do //masukin kata perkata sampai user menginput #
-			begin
-				arWisata[x].fasilitas[j]:=tmp;
-				tmp:=getWord;
+		writeln('fasilitas : ');
+			repeat
 				inc(j);
-			enad;
-		write(' Deskripsi [akhiri dengan " #"] : '); desk:=''; tmp:=getWord1;
-		while tmp <> '#' do //masukin kata perkata sampai user menginput #
-			begin
-				desk:=desk+' '+tmp;
-				tmp:=getWord1;
-			end;
-		arWisata[x].deskripsi:=desk;
+				write(j,' : '); readln(arWisata[x].fasilitas[j]);
+			until (arWisata[x].fasilitas[j]='');
+		write(' Deskripsi : '); readln(arWisata[x].deskripsi);
 		writeln;
 		write('Ingin nambah data wisata lagi? [Y/T] : '); readln(pilihadmin);
 		if pilihadmin = 'y' then
@@ -412,7 +373,7 @@ begin
 	clrscr;
 	writeln('==Login Admin==');
 	write(' Username : '); readln(uname);
-	write(' Password  : '); readln(pass);
+	write(' Password  : '); pass:=getpass;
 	until ((uname = 'admin') and (pass = 'admin')) or ((uname = '') and (pass = ''));
 	if ((uname = 'admin') and (pass = 'admin')) then
 		menuAdmin();
@@ -428,13 +389,14 @@ begin
     {$I-} Reset(fAkun) ;
     {$I+} if IOResult<>0 then Rewrite(fAkun) ;
     close(fAkun);
+
 	repeat
-	clrscr;//hahahahahahhahahahahaha
+	clrscr;
 	writeln('-------------------------------------------------');
 	writeln('========== Selamat Datang di JaJalKuy! ==========');
 	writeln('-------------------------------------------------');
 	writeln(' Main Menu ');
-	writeln('1.User)');
+	writeln('1.User');
 	writeln('2.Admin ');
 	writeln('3.Log Out');
 	writeln;
