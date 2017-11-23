@@ -1,5 +1,5 @@
 # mini-project
-This Repository is basicly my mini-project for a course in mu college, which is Dasar Algoritma Pemrograman.
+This Repository is basicly my mini-project for a course in my college, which is Dasar Algoritma Pemrograman.
 
 <h1> What to do </h1>
   i need to make a program for tourist attraction(?) something like that.
@@ -19,3 +19,4 @@ This Repository is basicly my mini-project for a course in mu college, which is 
   <h1>Deadline</h1>
    <h2> 3 December 2017 </h2>
  
+  Flow Chart / User & admin flow will update soon
