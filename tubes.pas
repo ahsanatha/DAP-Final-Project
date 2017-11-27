@@ -67,6 +67,111 @@ var
 	pilih : Byte;
 
 //==================== PROCEDURE DAN FUNCTION yang dibutuhkan ====================\\
+procedure switchWis(var c,d:wisata);
+var
+	tmp: wisata;
+begin
+	tmp:=c;
+	c:=d;
+	d:=tmp;
+end;
+procedure iSort();
+begin
+	
+end;
+
+procedure sSort();
+var
+	i,j,s,huah,a,b: longint;
+	tmp: array [1..Max] of string;
+	AsDesc:byte;
+begin
+	for i:= 1 to Max do
+		tmp[i]:='';
+	//pre-process
+	for i:= 1 to jumlahdata do
+		begin
+			s:=Length(arWisata[i].jam.buka);
+			j:=1;
+				while (j<=s) do
+				begin
+					if (arWisata[i].jam.buka[j] <> '.') then
+						tmp[i]:=tmp[i]+arWisata[i].jam.buka[j];
+					inc(j);
+				end;
+					writeln(tmp[i]);
+					readln;
+		end;
+	clrscr;
+	repeat
+	writeln('1. Ascending');
+	writeln('2. Descending');
+	writeln;
+	write('Pilih : '); readln(AsDesc);
+	until (AsDesc=1) or (AsDesc=2);
+	//mulai sort
+	for i:= 1 to jumlahdata do
+		begin
+			huah:=i;
+			for j:= i+1 to jumlahdata do
+				begin
+					a:=StrToInt(tmp[huah]);
+					b:=StrToInt(tmp[j]);
+					case AsDesc of
+						1 : begin
+								if a > b then
+									huah:=j;
+							end;
+						2 : begin
+								if a < b then
+									huah:=j;
+							end;
+					end;
+				end;
+			switchWis(arWisata[huah],arWisata[i]);
+		end;
+
+end;
+procedure bSort(x:string);//harga weekend dan weekday
+	var
+		AsDesc,i,j: Integer;
+		a,b:longint;
+begin
+	clrscr;
+	repeat
+	writeln('1. Ascending');
+	writeln('2. Descending');
+	writeln;
+	write('Pilih : '); readln(AsDesc);
+	until (AsDesc=1) or (AsDesc=2);
+	for i:=1 to jumlahdata do
+		begin
+			for j:= 1 to jumlahdata-1 do 
+				begin
+					if x = 'day' then
+						begin
+							a:=StrToInt(arWisata[j].harga.weekday);
+							b:=StrToInt(arWisata[j+1].harga.weekday);
+						end
+					else if x = 'end' then
+						begin
+							a:=StrToInt(arWisata[j].harga.weekend);
+							b:=StrToInt(arWisata[j+1].harga.weekend);
+						end;
+					case AsDesc of 
+						1 : begin
+								if a > b then
+									switchWis(arWisata[j],arWisata[j+1]);
+							end;
+						2 : begin
+								if a < b then
+									switchWis(arWisata[j],arWisata[j+1]);
+							end;
+					end;
+				end;
+		end;
+end;
+
 
 function getpass(): string;
 var
@@ -89,6 +194,7 @@ begin
 	reset(fAkun);
 	while not eof(fAkun) do
 		begin
+
 			inc(jumlahakun);
 			read(fAkun,arAkun[jumlahakun]);
 		end;
@@ -104,7 +210,7 @@ begin
 		end;
 	close(fAkun);
 end;
-procedure load;
+procedure load; {ngebuka file, mindahin data di file ke array}
 begin
 	assign(f,'wisata.dat');
 	reset(f);
@@ -115,7 +221,7 @@ begin
 		end;
 	close(f);
 end;
-procedure save;
+procedure save;{buka file, masukin semua array }
 begin
 	assign(f,'wisata.dat');
 	rewrite(f);
@@ -125,70 +231,7 @@ begin
 		end;
 	close(f);
 end;
-//==================== User Menu dan teman teman nya ====================\\
-procedure cekUser(uname,pass:string; var valid : boolean);
-var
-	i:longint;
-	cek:boolean;
-begin
-	cek:=false;
-	for i:=1 to jumlahakun do
-		begin
-		 	if (arAkun[i].uname = uname) and (arAkun[i].pass = pass) then
-		 		cek:=true;
-		 end; 
-	valid := cek;
-end;
-procedure menuUser();
-begin
-	clrscr;
-	writeln('1. Lihat Semua Wisata');
-	writeln('2. Cari Tempat wisata');
-	writeln('3.	Urutkan Berdasarkan');
-	writeln('4. History Booking Wisata');
-	readln;
-end;
 
-procedure welcomeUser();
-var
-	uname,pass: string;
-	pilihan:integer;
-	valid:boolean;
-begin
-	loadAkun;
-	repeat
-	clrscr;
-	writeln('1. Login ');
-	writeln('2. Register ');
-	writeln;
-	write('pilih : ');readln(pilihan);
-	until (pilihan = 1 ) or (pilihan = 2);
-	if pilihan = 1 then
-		begin
-			clrscr;
-			writeln('==Login==');
-			write('Username : '); readln(uname);
-			write('Password : '); pass:=getpass;
-			cekUser(uname,pass,valid);
-			if valid then
-				menuUser()
-			else
-				writeln('username atau password yang anda masukkan salah ');
-				write('press any key to continue..'); readkey;
-		end
-	else
-		begin
-			clrscr;
-			inc(jumlahakun);
-			writeln('==Daftar==');
-			write('Nama Lengkap : '); readln(arAkun[jumlahakun].nama);
-			write('Username : '); readln(arAkun[jumlahakun].uname);
-			write('Password : '); readln(arAkun[jumlahakun].pass);
-			saveAkun;
-			writeln('done');
-			write('press anykey to continue.. '); readkey;
-		end;
-end;
 //==================== Admin Menu dan teman teman nya ====================\\
 procedure cek(idx:integer);
 begin
@@ -237,19 +280,23 @@ begin
 		else
 			arWisata[x].indFam:='Family Friendly';
 		write('Harga Weekday [Senin-Jumat] (per orang) : '); readln(arWisata[x].harga.weekday);
-		write('Harga Weekend [Sabtu-Minggu] (per orang) : '); readln(arWisata[x].harga.weekend);
+		write('Harga Weekend [Sabtu-Minggu] (per rang) : '); readln(arWisata[x].harga.weekend);
 		write('Jam Buka Operasional [jam.menit] : '); readln(arWisata[x].jam.buka);
 		write('Jam Tutup Operasional [jam.menit] : '); readln(arWisata[x].jam.tutup);
-		writeln('fasilitas : ');
+		writeln('fasilitas : ');j:=0;
 			repeat
 				inc(j);
 				write(j,' : '); readln(arWisata[x].fasilitas[j]);
 			until (arWisata[x].fasilitas[j]='');
 		write(' Deskripsi : '); readln(arWisata[x].deskripsi);
 		writeln;
-		write('Ingin nambah data wisata lagi? [Y/T] : '); readln(pilihadmin);
+		write('Ingin nambah data wisata lagi? [y/t] : '); readln(pilihadmin);
 		if pilihadmin = 'y' then
+			begin
 			inc(jumlahdata);
+			x:=jumlahdata;	
+			end;
+
 	until (lowercase(pilihadmin)='t');
 end;
 
@@ -330,11 +377,31 @@ begin
 				end;
 		end;
 		writeln;
-	write('[1.Insert 2.Edit 3.Delete 4.Back] : '); readln(tmp);
-		case tmp of
-			1 : begin inc(jumlahdata); insertData(jumlahdata); end;
-			2 : begin editData; end;
-			3 : begin deleteData; end;
+	if id=2 then
+		begin	
+			write('[1.Insert 2.Edit 3.Delete 4.Back] : '); readln(tmp);
+				case tmp of
+					1 : begin inc(jumlahdata); insertData(jumlahdata); end;
+					2 : begin editData; end;
+					3 : begin deleteData; end;
+				end;
+		end
+	else if id=1 then
+		begin
+			writeln('Urutkan Berdasarkan :');
+			writeln('1. Harga Weekday ');
+			writeln('2. Harga Weekend ');
+			writeln('3. Jam Buka ');
+			writeln('4. Jam Tutup');
+			writeln('5. Back');
+			writeln;
+			write('Pilih : '); readln(tmp);
+			case tmp of
+				1: begin bSort('day'); end;
+				2: begin bSort('end'); end;
+				3: begin sSort(); end;
+				4: begin iSort(); end;
+			end;
 		end;
 end;
 
@@ -378,6 +445,84 @@ begin
 	if ((uname = 'admin') and (pass = 'admin')) then
 		menuAdmin();
 end;
+
+//==================== User Menu dan teman teman nya ====================\\
+procedure cekUser(uname,pass:string; var valid : boolean);
+var
+	i:longint;
+	cek:boolean;
+begin
+	cek:=false;
+	for i:=1 to jumlahakun do
+		begin
+		 	if (arAkun[i].uname = uname) and (arAkun[i].pass = pass) then
+		 		cek:=true;
+		 end; 
+	valid := cek;
+end;
+procedure menuUser();
+var
+	tmp: byte;
+begin
+	repeat
+	clrscr;
+	writeln('1. Lihat Semua Wisata ');
+	writeln('2. Cari Tempat Wisata ');
+	writeln('3. Back ');
+	writeln;
+	write('Pilih : '); readln(tmp);
+	case tmp of
+		1: begin viewData(); end;
+		2: begin {cariData();} end;
+	end;
+	until (tmp=3);
+end;
+
+
+procedure welcomeUser();
+var
+	uname,pass: string;
+	pilihan:integer;
+	valid:boolean;
+begin
+	loadAkun;
+	repeat
+	clrscr;
+	writeln('1. Login ');
+	writeln('2. Register ');
+	writeln;
+	write('pilih : ');readln(pilihan);
+	until (pilihan = 1 ) or (pilihan = 2);
+	if pilihan = 1 then
+		begin
+			clrscr;
+			writeln('==Login==');
+			write('Username : '); readln(uname);
+			write('Password : '); pass:=getpass;
+			cekUser(uname,pass,valid);
+			if valid then
+				menuUser()
+			else
+				begin
+					writeln;
+					writeln('username atau password yang anda masukkan salah ');
+					write('press any key to continue..'); readkey;
+				end;
+		end
+	else
+		begin
+			clrscr;
+			inc(jumlahakun);
+			writeln('==Daftar==');
+			write('Nama Lengkap : '); readln(arAkun[jumlahakun].nama);
+			write('Username : '); readln(arAkun[jumlahakun].uname);
+			write('Password : '); readln(arAkun[jumlahakun].pass);
+			saveAkun;
+			writeln('done');
+			write('press anykey to continue.. '); readkey;
+		end;
+end;
+
 //==================== PROGRAM UTAMA ====================\\
 begin
 	clrscr;
@@ -391,6 +536,7 @@ begin
     {$I+} if IOResult<>0 then Rewrite(fAkun) ;
     close(fAkun);
     //akhir dari bikin file
+    load;
 	repeat
 	clrscr;
 	writeln('-------------------------------------------------');
@@ -407,5 +553,6 @@ begin
 		2: welcomeAdmin();
 	end;
 	until (id=3);
+	save;
 	clrscr;
 end.
