@@ -12,11 +12,11 @@ This Repository is basicly my mini-project for a course in my college, which is 
     4. Edit/Update Data (check)<br>
     5. Delete Data (check)<br>
     6. View Data (check)<br>
-    7. Searching two categories<br>
-    8. Sort data based on three catergories, using Bubble, Selection and Insertion sort <br>
+    7. Searching two categories (check) <br>
+    8. Sort data based on three catergories, using Bubble, Selection and Insertion sort (check) <br>
     9. Error Handling, Optional (check)<br>
   
   <h1>Deadline</h1>
    <h2> 3 December 2017 </h2>
  
-  Flow Chart / User & admin flow will update soon
+ ps. this shit somehow got dope score.
