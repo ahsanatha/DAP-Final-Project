@@ -19,4 +19,4 @@ This Repository is basicly my mini-project for a course in my college, which is 
   <h1>Deadline</h1>
    <h2> 3 December 2017 </h2>
  
- ps. this shit somehow got dope score.
+ [update 16 december 2017 ] ps. this shit somehow got dope score.
