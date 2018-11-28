@@ -1,5 +1,5 @@
 # mini-project
-This Repository is basicly my mini-project for a course in my college, which is Dasar Algoritma Pemrograman.
+This Repository is basicaly my mini-project for a course in my college, which is Dasar Algoritma Pemrograman.
 
 <h1> What to do </h1>
   i need to make a program for tourist attraction(?) something like that.
